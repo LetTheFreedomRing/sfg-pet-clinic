@@ -18,8 +18,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 class OwnerControllerTest {
@@ -97,5 +95,54 @@ class OwnerControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("owners/ownerDetails"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
+    }
+
+    @Test
+    void initCreationForm() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/owners/new"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("owners/createOrUpdateForm"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
+    }
+
+    @Test
+    void initUpdateForm() throws Exception {
+        Long ownerId = 1L;
+        Owner owner = new Owner();
+        owner.setId(ownerId);
+        Mockito.when(ownerService.findById(ArgumentMatchers.anyLong())).thenReturn(owner);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/owners/{ownerId}/edit", ownerId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("owners/createOrUpdateForm"))
+                .andExpect(MockMvcResultMatchers.model().attribute("owner", Matchers.hasProperty("id", Matchers.is(ownerId))));
+    }
+
+    @Test
+    void processCreationForm() throws Exception {
+        Long ownerId = 1L;
+        Owner owner = new Owner();
+        owner.setId(ownerId);
+        Mockito.when(ownerService.save(ArgumentMatchers.any())).thenReturn(owner);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/owners/new"))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/owners/" + ownerId));
+
+        Mockito.verify(ownerService, Mockito.times(1)).save(ArgumentMatchers.any());
+    }
+
+    @Test
+    void processUpdateForm() throws Exception {
+        Long ownerId = 1L;
+        Owner owner = new Owner();
+        owner.setId(ownerId);
+        Mockito.when(ownerService.save(ArgumentMatchers.any())).thenReturn(owner);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/owners/{ownerId}/edit", ownerId))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/owners/" + ownerId));
+
+        Mockito.verify(ownerService, Mockito.times(1)).save(ArgumentMatchers.any());
     }
 }

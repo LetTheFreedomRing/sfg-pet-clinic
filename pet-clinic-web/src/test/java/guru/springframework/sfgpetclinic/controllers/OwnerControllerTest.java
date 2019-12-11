@@ -5,6 +5,7 @@ import guru.springframework.sfgpetclinic.services.OwnerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -65,6 +66,19 @@ class OwnerControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("notimplemented"));
         Mockito.verifyZeroInteractions(ownerService);
+    }
 
+    @Test
+    public void showOwner() throws Exception {
+        Long ownerId = 1L;
+        Owner owner = new Owner();
+        owner.setId(ownerId);
+
+        Mockito.when(ownerService.findById(ArgumentMatchers.anyLong())).thenReturn(owner);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/owners/{ownerId}",ownerId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("owners/ownerDetails"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
     }
 }

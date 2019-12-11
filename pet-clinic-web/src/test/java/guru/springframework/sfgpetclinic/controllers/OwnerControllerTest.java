@@ -2,6 +2,7 @@ package guru.springframework.sfgpetclinic.controllers;
 
 import guru.springframework.sfgpetclinic.model.Owner;
 import guru.springframework.sfgpetclinic.services.OwnerService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,8 +15,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.ui.Model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,9 +26,6 @@ class OwnerControllerTest {
 
     @Mock
     OwnerService ownerService;
-
-    @Mock
-    Model model;
 
     @InjectMocks
     OwnerController ownerController;
@@ -39,37 +38,55 @@ class OwnerControllerTest {
     }
 
     @Test
-    void getOwners() throws Exception {
-        Set<Owner> owners = new HashSet<>();
-        Mockito.when(ownerService.findAll()).thenReturn(owners);
-        mockMvc.perform(MockMvcRequestBuilders.get("/owners"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("owners/index"))
-                .andExpect(MockMvcResultMatchers.model().attribute("owners", owners));
-        Mockito.verify(ownerService, Mockito.times(1)).findAll();
-    }
-
-    @Test
-    void getOwnersByIndex() throws Exception {
-        Set<Owner> owners = new HashSet<>();
-        Mockito.when(ownerService.findAll()).thenReturn(owners);
-        mockMvc.perform(MockMvcRequestBuilders.get("/owners/index"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("owners/index"))
-                .andExpect(MockMvcResultMatchers.model().attribute("owners", owners));
-        Mockito.verify(ownerService, Mockito.times(1)).findAll();
-    }
-
-    @Test
     void findOwners() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/owners/find"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("notimplemented"));
+                .andExpect(MockMvcResultMatchers.view().name("owners/findOwners"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
         Mockito.verifyZeroInteractions(ownerService);
     }
 
     @Test
-    public void showOwner() throws Exception {
+    void processFindFormReturnMany() throws Exception {
+        ArrayList<Owner> owners = new ArrayList<>();
+        Owner owner1 = new Owner();
+        owner1.setId(1L);
+        Owner owner2 = new Owner();
+        owner2.setId(2L);
+        owners.add(owner1);
+        owners.add(owner2);
+        Mockito.when(ownerService.findAllByLastNameLike(ArgumentMatchers.anyString())).thenReturn(owners);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/owners").param("lastName", ""))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("owners/ownersList"))
+                .andExpect(MockMvcResultMatchers.model().attribute("owners", Matchers.hasSize(2)));
+    }
+
+    @Test
+    void processFindFormReturnOne() throws Exception {
+        Long ownerId = 1L;
+        Owner owner = new Owner();
+        owner.setId(ownerId);
+
+        Mockito.when(ownerService.findAllByLastNameLike(ArgumentMatchers.anyString())).thenReturn(Collections.singletonList(owner));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/owners").param("lastName", ""))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/owners/" + ownerId));
+    }
+
+    @Test
+    void processFindFormReturnNone() throws Exception {
+        Mockito.when(ownerService.findAllByLastNameLike(ArgumentMatchers.anyString())).thenReturn(new ArrayList<>());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/owners").param("lastName", ""))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("owners/findOwners"));
+    }
+
+    @Test
+    void showOwner() throws Exception {
         Long ownerId = 1L;
         Owner owner = new Owner();
         owner.setId(ownerId);

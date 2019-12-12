@@ -9,7 +9,6 @@ import javax.persistence.Table;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "specialities")
 public class Speciality extends BaseEntity {

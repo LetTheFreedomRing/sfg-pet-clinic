@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 @Setter
 @Getter
@@ -13,5 +14,6 @@ import javax.persistence.Table;
 @Table(name = "specialities")
 public class Speciality extends BaseEntity {
 
+    @NotBlank
     String description;
 }

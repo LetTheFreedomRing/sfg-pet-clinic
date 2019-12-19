@@ -111,7 +111,7 @@ class PetControllerTest {
         ArgumentCaptor<Pet> captor = ArgumentCaptor.forClass(Pet.class);
         mockMvc.perform(post("/owners/{ownerId}/pets/new", OWNER_ID)
                 .param("name", PET_NAME)
-                .param("type", PET_TYPE)
+                .param("petType", PET_TYPE)
                 .param("birthDate", PET_BIRTH_DATE.toString())
         )
                 .andExpect(status().is3xxRedirection())
@@ -143,7 +143,11 @@ class PetControllerTest {
     @Test
     void processUpdateForm() throws Exception {
         ArgumentCaptor<Pet> captor = ArgumentCaptor.forClass(Pet.class);
-        mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", OWNER_ID, PET_ID))
+        mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", OWNER_ID, PET_ID)
+                .param("name", PET_NAME)
+                .param("birthDate", String.valueOf(PET_BIRTH_DATE))
+                .param("petType", PET_TYPE)
+        )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/owners/" + OWNER_ID));
         Mockito.verify(petService, Mockito.times(1)).save(captor.capture());

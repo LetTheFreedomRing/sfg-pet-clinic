@@ -140,7 +140,13 @@ class OwnerControllerTest {
     void processCreationForm() throws Exception {
         Mockito.when(ownerService.save(ArgumentMatchers.any())).thenReturn(owner);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/owners/new"))
+        mockMvc.perform(MockMvcRequestBuilders.post("/owners/new")
+                .param("firstName", OWNER_FIRST_NAME)
+                .param("lastName", OWNER_LAST_NAME)
+                .param("address", OWNER_ADDRESS)
+                .param("city", OWNER_CITY)
+                .param("telephone", OWNER_TELEPHONE)
+        )
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.view().name("redirect:/owners/" + OWNER_ID));
 
@@ -151,7 +157,13 @@ class OwnerControllerTest {
     void processUpdateForm() throws Exception {
         Mockito.when(ownerService.save(ArgumentMatchers.any())).thenReturn(owner);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/owners/{ownerId}/edit", OWNER_ID))
+        mockMvc.perform(MockMvcRequestBuilders.post("/owners/{ownerId}/edit", OWNER_ID)
+                .param("firstName", OWNER_FIRST_NAME)
+                .param("lastName", OWNER_LAST_NAME)
+                .param("address", OWNER_ADDRESS)
+                .param("city", OWNER_CITY)
+                .param("telephone", OWNER_TELEPHONE)
+        )
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.view().name("redirect:/owners/" + OWNER_ID));
 

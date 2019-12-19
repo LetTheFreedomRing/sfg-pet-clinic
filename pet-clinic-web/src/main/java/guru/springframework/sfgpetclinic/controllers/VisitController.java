@@ -38,6 +38,12 @@ public class VisitController {
 
     @PostMapping("/new")
     public String processCreateForm(Pet pet, Visit visit, BindingResult result, Model model) {
+        if (visit.getDate() == null) {
+            result.rejectValue("date", "notEmpty", "must not be empty");
+        }
+        if (visit.getDescription().isEmpty()) {
+            result.rejectValue("description", "notEmpty", "must not be empty");
+        }
         if (result.hasErrors()) {
             model.addAttribute("visit", visit);
             return VIEWS_VISITS_CREATE_OR_UPDATE_FORM;

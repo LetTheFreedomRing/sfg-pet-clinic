@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = false)
 @Table(name = "specialities")
 public class Speciality extends BaseEntity {
 

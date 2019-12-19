@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = false)
 @Table(name = "visits")
 public class Visit extends BaseEntity {
 

@@ -3,6 +3,7 @@ package guru.springframework.sfgpetclinic.services.map;
 import guru.springframework.sfgpetclinic.model.Owner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -56,6 +57,8 @@ class OwnerServiceMapTest {
     void delete() {
         Owner owner2 = new Owner();
         owner2.setId(2L);
+        owner2.setFirstName("Dummy");
+        service.save(owner2);
 
         service.delete(owner2);
         assertEquals(1, service.findAll().size());
